@@ -53,6 +53,11 @@ const Popup = () => {
     setActiveTab('create');
   };
 
+  // Open options page
+  const openOptions = () => {
+    chrome.runtime.openOptionsPage();
+  };
+
   // Setup tabs for navigation
   const tabs = [
     { id: 'create', label: 'Create' },
@@ -97,11 +102,7 @@ const Popup = () => {
       )}
       
       <div className="text-center mt-16">
-        <a 
-          href="chrome-extension://navis-automate/options.html" 
-          target="_blank" 
-          rel="noopener noreferrer"
-        >
+        <a href="#" onClick={openOptions}>
           Settings
         </a>
       </div>

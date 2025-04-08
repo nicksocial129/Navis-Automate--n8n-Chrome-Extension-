@@ -111,29 +111,70 @@ const generateWorkflowWithOpenAI = async (description, settings) => {
         messages: [
           {
             role: 'system',
-            content: `You are an expert n8n workflow creator. Convert natural language descriptions into valid n8n workflow JSON. Your response should include:
-            1. A valid n8n workflow JSON that can be imported directly into n8n
-            2. A clear explanation of how the workflow functions
-            
-            Format your response as a JSON object with two keys:
+            content: `You are an expert n8n workflow creator. Your task is to convert natural language descriptions into VALID n8n workflow JSON that can be directly imported without errors.
+
+FORMAT YOUR RESPONSE EXACTLY like this:
+{
+  "workflow": {
+    "name": "Workflow Name",
+    "nodes": [
+      {
+        "id": "unique-node-id-1",
+        "name": "Node Name",
+        "type": "n8n-nodes-base.nodeType",
+        "typeVersion": 1.0,
+        "position": [0, 0],
+        "parameters": {}
+      }
+    ],
+    "connections": {
+      "Node-Name-1": {
+        "main": [
+          [
             {
-              "workflow": { ... }, // The complete n8n workflow JSON
-              "explanation": "..." // Explanation of the workflow
+              "node": "Node-Name-2",
+              "type": "main",
+              "index": 0
             }
-            
-            Ensure the workflow JSON follows these requirements:
-            - Must include a valid "name" for the workflow
-            - "nodes" array with properly configured nodes
-            - "connections" object to define data flow
-            - Correct "id", "type", "position", "parameters" for each node
-            - Valid node types (e.g., "n8n-nodes-base.httpRequest")
-            - If AI nodes are used, include proper credential placeholders
-            
-            For workflow explanations as sticky notes:
-            - Create sticky note nodes with clear markdown-formatted explanations
-            - Position sticky notes near related nodes
-            
-            Make the workflow as functional as possible, implementing all the logic described in the user's request.`
+          ]
+        ]
+      }
+    },
+    "active": false,
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "tags": [],
+    "meta": {
+      "instanceId": "1234abcd"
+    }
+  },
+  "explanation": "Explanation of the workflow..."
+}
+
+CRITICAL REQUIREMENTS:
+1. Ensure valid JSON with NO syntax errors
+2. Generate UNIQUE IDs for each node (use UUID-like format)
+3. ALWAYS include required fields:
+   - "id", "name", "type", "position", "parameters" for each node
+   - "connections" object must link nodes correctly
+   - "active" must be set to false
+4. Position nodes logically:
+   - Start nodes at [0, 0]
+   - Each subsequent node at [x+200, 0] or in a logical flow
+   - Avoid node overlaps
+5. Use ACTUAL valid n8n node types (e.g., "n8n-nodes-base.httpRequest")
+6. Use proper parameter structures for each node type
+7. For sticky notes (explanations):
+   - Type: "n8n-nodes-base.stickyNote"
+   - Include proper markdown formatting
+   - Set appropriate width/height properties
+
+INCLUDE A DETAILED EXPLANATION clearly describing how the workflow works.
+
+If you're uncertain about specific node parameters, use sensible placeholder values that can be edited later.
+
+Verify that your entire response is proper JSON format before submitting.`
           },
           {
             role: 'user',
@@ -205,37 +246,78 @@ const generateWorkflowWithAnthropic = async (description, settings) => {
       headers: {
         'Content-Type': 'application/json',
         'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01'
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
       },
       body: JSON.stringify({
-        model: 'claude-3-opus-20240229',
-        messages: [
-          {
-            role: 'system',
-            content: `You are an expert n8n workflow creator. Convert natural language descriptions into valid n8n workflow JSON. Your response should include:
-            1. A valid n8n workflow JSON that can be imported directly into n8n
-            2. A clear explanation of how the workflow functions
-            
-            Format your response as a JSON object with two keys:
+        model: 'claude-3-5-sonnet-20240620',
+        // Move system prompt to top-level parameter
+        system: `You are an expert n8n workflow creator. Your task is to convert natural language descriptions into VALID n8n workflow JSON that can be directly imported without errors.
+
+FORMAT YOUR RESPONSE EXACTLY like this:
+{
+  "workflow": {
+    "name": "Workflow Name",
+    "nodes": [
+      {
+        "id": "unique-node-id-1",
+        "name": "Node Name",
+        "type": "n8n-nodes-base.nodeType",
+        "typeVersion": 1.0,
+        "position": [0, 0],
+        "parameters": {}
+      }
+    ],
+    "connections": {
+      "Node-Name-1": {
+        "main": [
+          [
             {
-              "workflow": { ... }, // The complete n8n workflow JSON
-              "explanation": "..." // Explanation of the workflow
+              "node": "Node-Name-2",
+              "type": "main",
+              "index": 0
             }
-            
-            Ensure the workflow JSON follows these requirements:
-            - Must include a valid "name" for the workflow
-            - "nodes" array with properly configured nodes
-            - "connections" object to define data flow
-            - Correct "id", "type", "position", "parameters" for each node
-            - Valid node types (e.g., "n8n-nodes-base.httpRequest")
-            - If AI nodes are used, include proper credential placeholders
-            
-            For workflow explanations as sticky notes:
-            - Create sticky note nodes with clear markdown-formatted explanations
-            - Position sticky notes near related nodes
-            
-            Make the workflow as functional as possible, implementing all the logic described in the user's request.`
-          },
+          ]
+        ]
+      }
+    },
+    "active": false,
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "tags": [],
+    "meta": {
+      "instanceId": "1234abcd"
+    }
+  },
+  "explanation": "Explanation of the workflow..."
+}
+
+CRITICAL REQUIREMENTS:
+1. Ensure valid JSON with NO syntax errors
+2. Generate UNIQUE IDs for each node (use UUID-like format)
+3. ALWAYS include required fields:
+   - "id", "name", "type", "position", "parameters" for each node
+   - "connections" object must link nodes correctly
+   - "active" must be set to false
+4. Position nodes logically:
+   - Start nodes at [0, 0]
+   - Each subsequent node at [x+200, 0] or in a logical flow
+   - Avoid node overlaps
+5. Use ACTUAL valid n8n node types (e.g., "n8n-nodes-base.httpRequest")
+6. Use proper parameter structures for each node type
+7. For sticky notes (explanations):
+   - Type: "n8n-nodes-base.stickyNote"
+   - Include proper markdown formatting
+   - Set appropriate width/height properties
+
+INCLUDE A DETAILED EXPLANATION clearly describing how the workflow works.
+
+If you're uncertain about specific node parameters, use sensible placeholder values that can be edited later.
+
+Verify that your entire response is proper JSON format before submitting.`,
+        // Only include user message in messages array
+        messages: [
           {
             role: 'user',
             content: description

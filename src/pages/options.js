@@ -76,6 +76,13 @@ const Options = () => {
       setIsSaving(false);
     }
   };
+
+  // Navigate back to popup
+  const navigateToPopup = () => {
+    chrome.runtime.getBackgroundPage((bg) => {
+      chrome.action.openPopup();
+    });
+  };
   
   if (isLoading) {
     return (
@@ -190,7 +197,7 @@ const Options = () => {
       </div>
       
       <div className="text-center mt-16">
-        <a href="chrome-extension://navis-automate/popup.html">
+        <a href="#" onClick={navigateToPopup}>
           Back to Main View
         </a>
       </div>
